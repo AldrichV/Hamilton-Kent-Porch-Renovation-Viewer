@@ -2,6 +2,7 @@ import * as THREE from './vendor/three.module.js';
 import { OrbitControls } from './vendor/OrbitControls.js';
 import { buildModel, W as modelPt, FT } from './model.js';
 import { buildSolids } from './solids.js';
+import { buildTrees } from './trees3d.js';
 import { buildTreadDesign, BOARD, RISER, TOPZ } from './treads.js';
 
 const $ = (s) => document.querySelector(s);
@@ -400,7 +401,7 @@ async function load() {
   try {
     status.textContent = 'Loading terrain from LiDAR…';
     const meta = await (await fetch('data/meta.json')).json();
-    const [h, c, veg] = await Promise.all([getBin('data/terrain_h.bin'), getBin('data/terrain_c.bin'), getBin('data/veg.bin')]);
+    const [h, c] = await Promise.all([getBin('data/terrain_h.bin'), getBin('data/terrain_c.bin')]);
     lidar.terrain = buildTerrain(meta, h, c); scene.add(lidar.terrain);
     let photoTex = null;
     try { photoTex = await loadOrtho(); lidar.terrain.material.map = photoTex; lidar.terrain.material.needsUpdate = true; recolour(); }
@@ -410,7 +411,8 @@ async function load() {
       lidar.solids = buildSolids(sd, { roofMap: photoTex, ortho: ORTHO, envIntensity: 0.8 });
       scene.add(lidar.solids.group);
     } catch (e) { console.warn('solids', e); }
-    lidar.trees = makeTrees(decodePoints(veg)); scene.add(lidar.trees);
+    try { lidar.trees3d = buildTrees(await (await fetch('data/trees.json')).json()); scene.add(lidar.trees3d); }
+    catch (e) { console.warn('trees', e); }
     status.hidden = true;
     await ensurePoints(); resize(); apply();
   } catch (err) {
@@ -432,7 +434,7 @@ function resize() {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   const scale = h * renderer.getPixelRatio() / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
-  [lidar.pointMat, lidar.trees?.material].forEach(m => m && (m.uniforms.uScale.value = scale));
+  [lidar.pointMat].forEach(m => m && (m.uniforms.uScale.value = scale));
 }
 new ResizeObserver(resize).observe(canvas);
 
