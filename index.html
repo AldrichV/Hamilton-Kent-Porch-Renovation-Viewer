@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>77 Carlingview Porch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout: full-bleed 3D scene; a drawing-sheet title block and a control card float over it. */
+:root {
+  --paper: #f4f5f2;      /* panel stock */
+  --ink: #1f2a33;        /* drafting ink */
+  --muted: #5d6a73;
+  --rule: #c9cfcf;
+  --new: #b9600f;        /* new work (UI text) */
+  --new-3d: #d9822b;     /* new work tint in the scene */
+  --demo: #b23a2a;       /* demolition */
+  --sky: #e2e7ea;        /* scene horizon */
+  --sky-top: #a7bfd3;
+  --sky-ground: #cdd0ca;
+  --press: #1f2a33;
+  --pass: #2e7d4f;
+  --press-fg: #f4f5f2;
+  --f-ui: "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-dim: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #1d2328; --ink: #e3e7e8; --muted: #9aa6ad; --rule: #3a444b; --new: #eba25c; --new-3d: #d9822b;
+  --demo: #e2735f; --pass: #5fc28a; --sky: #2b333a; --sky-top: #141a21; --sky-ground: #23282b; --press: #e3e7e8; --press-fg: #1d2328; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #1d2328; --ink: #e3e7e8; --muted: #9aa6ad; --rule: #3a444b; --new: #eba25c; --new-3d: #d9822b;
+  --demo: #e2735f; --pass: #5fc28a; --sky: #2b333a; --sky-top: #141a21; --sky-ground: #23282b; --press: #e3e7e8; --press-fg: #1d2328; color-scheme: dark }
+
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body { background: var(--sky); color: var(--ink); font-family: var(--f-ui); overflow: hidden; }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+#labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.tag { position: absolute; left: 0; top: 0; font: 500 11px/1.2 var(--f-dim); white-space: nowrap; color: var(--ink);
+  background: color-mix(in srgb, var(--paper) 88%, transparent); border-left: 2px solid var(--ink); padding: 3px 6px; }
+.tag.new { border-color: var(--new); color: var(--new); }
+.tag.demo { border-color: var(--demo); color: var(--demo); }
+
+.card { background: var(--paper); border: 1px solid var(--ink); }
+#panel { position: fixed; top: max(12px, env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px));
+  width: 300px; max-height: calc(100% - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto;
+  display: grid; gap: 14px; padding: 14px 14px 16px; }
+.head { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+.eyebrow { font: 500 10px/1 var(--f-dim); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 4px 0 0; font-size: 20px; font-weight: 600; line-height: 1.15; text-wrap: balance; }
+#panel-toggle { font: 500 11px var(--f-dim); background: none; border: 1px solid var(--rule); color: var(--ink); padding: 4px 8px; cursor: pointer; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--ink); }
+.seg button { font: 500 13px var(--f-ui); padding: 8px 6px; background: transparent; color: var(--ink); border: 0; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--press); color: var(--press-fg); }
+.seg.big button { font-size: 15px; font-weight: 600; padding: 10px 6px; letter-spacing: .02em; }
+body[data-phase="proposed"] .seg.big button[data-phase="proposed"][aria-pressed="true"] { background: var(--new); color: var(--paper); }
+.seg.small button { font-size: 12px; padding: 6px 4px; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--new); outline-offset: 2px; }
+#phase-note { margin: 0; font-size: 13px; line-height: 1.4; color: var(--muted); }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 7px; }
+legend { padding: 0 0 6px; }
+.chk { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.chk input { accent-color: var(--ink); width: 15px; height: 15px; margin: 0; }
+.chk small { color: var(--muted); font-size: 12px; }
+.views { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--ink); }
+.views button { font: 500 12px var(--f-ui); padding: 7px 2px; background: none; color: var(--ink); border: 0; cursor: pointer; }
+.views button + button { border-left: 1px solid var(--rule); }
+.views button:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.legend { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+#panel.collapsed > :not(.head) { display: none; }
+.tread-opts { display: grid; gap: 8px; }
+.schemes button { font-family: var(--f-dim); font-weight: 500; }
+.tread-card { display: grid; gap: 4px; font-size: 13px; line-height: 1.35; padding: 8px 0 2px; border-top: 1px solid var(--rule); }
+.tread-card span:not(.chip) { color: var(--muted); }
+.chip { justify-self: start; font: 500 11px var(--f-dim); padding: 2px 8px; border: 1px solid currentColor; border-radius: 99px; }
+.chip.pass { color: var(--pass); } .chip.fail { color: var(--demo); }
+.rng { display: grid; grid-template-columns: 1fr 1.2fr auto; gap: 8px; align-items: center; font-size: 13px; }
+.rng select { grid-column: 2 / 4; font: inherit; background: var(--paper); color: var(--ink); border: 1px solid var(--rule); padding: 3px 4px; }
+.rng input { width: 100%; accent-color: var(--ink); min-width: 0; }
+.rng output { font: 500 12px var(--f-dim); font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+.two .chk { font-size: 13px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip.info { color: var(--muted); }
+.note { margin: 0; font-size: 12px; line-height: 1.4; color: var(--muted); }
+
+#titleblock { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  width: 270px; display: grid; grid-template-columns: 1fr auto; font-size: 12px; }
+#titleblock > div { padding: 6px 8px; border-top: 1px solid var(--ink); }
+#titleblock > div:nth-child(-n+2) { border-top: 0; }
+#titleblock > div:nth-child(odd) { border-right: 1px solid var(--ink); }
+#titleblock .k { font: 500 9px/1 var(--f-dim); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
+#titleblock .wide { grid-column: 1 / -1; border-right: 0 !important; }
+#titleblock .v { font-family: var(--f-dim); font-size: 11px; font-variant-numeric: tabular-nums; }
+#compass { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); top: max(12px, env(safe-area-inset-top, 0px));
+  width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; }
+#compass-needle { width: 64px; height: 64px; transition: transform .05s linear; }
+#status { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); padding: 8px 12px; font: 500 12px var(--f-dim); max-width: calc(100% - 32px); }
+#help { font: 400 11px/1.4 var(--f-dim); color: var(--muted); margin: 0; }
+
+@media (max-width: 700px) {
+  #panel { top: auto; bottom: max(8px, env(safe-area-inset-bottom, 0px)); left: max(16px, env(safe-area-inset-left, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px)); width: auto; max-height: 52%; }
+  #titleblock { display: none; }
+  #compass { width: 52px; height: 52px; } #compass-needle { width: 52px; height: 52px; }
+}
+</style>
+
+<canvas id="scene" aria-label="3D model of the porch and stair at 77 Carlingview Drive over 2023 LiDAR"></canvas>
+<div id="labels"></div>
+
+<aside id="panel" class="card">
+  <div class="head">
+    <div><div class="eyebrow">Hamilton Kent · Porch alteration</div><h1>77 Carlingview Dr.</h1></div>
+    <button id="panel-toggle" aria-expanded="true" aria-controls="panel">Hide</button>
+  </div>
+  <div class="seg big" role="group" aria-label="Phase">
+    <button data-phase="existing" aria-pressed="false">Existing</button>
+    <button data-phase="proposed" aria-pressed="true">Proposed</button>
+  </div>
+  <p id="phase-note"></p>
+  <div class="views" role="group" aria-label="Camera">
+    <button data-view="porch">Porch</button><button data-view="elevation">West elev.</button><button data-view="plan">Plan</button><button data-view="site">Site</button>
+  </div>
+  <fieldset>
+    <legend class="eyebrow">Drawings</legend>
+    <label class="chk"><input type="checkbox" id="lay-new" checked> Highlight new work</label>
+    <label class="chk"><input type="checkbox" id="lay-demo"> Show demolition <small>(proposed)</small></label>
+    <label class="chk"><input type="checkbox" id="lay-structure" checked> Steel framing <small>S1.0</small></label>
+    <label class="chk"><input type="checkbox" id="lay-xray"> See through ground <small>piers, footings</small></label>
+    <label class="chk"><input type="checkbox" id="lay-labels" checked> Labels</label>
+  </fieldset>
+  <fieldset id="tread-field">
+    <legend class="eyebrow">Stair · revised design</legend>
+    <div class="seg small" role="group" aria-label="Stair design">
+      <button data-tread="drawn">As drawn (S2.0)</button><button data-tread="revised">Revised (SD-01)</button>
+    </div>
+    <div id="tread-opts" class="tread-opts" hidden>
+      <div class="tread-card"><strong>Steel tread frame TF-1 × 11 · Trex treads</strong><span id="tread-desc"></span><span id="tread-chips" class="chips"></span></div>
+      <div class="rng"><label for="tr-w">Clear width</label><input type="range" id="tr-w" min="36" max="66" step="1" value="44"><output id="tr-w-out">44"</output></div>
+      <div class="rng"><label for="tr-tgt">Max bearer spacing</label><select id="tr-tgt"><option value="12" selected>12" o.c.</option><option value="11">11" o.c.</option><option value="10">10" o.c.</option></select></div>
+      <div class="rng"><label for="tr-col">Tread boards</label><select id="tr-col"><option value="brown" selected>Wood brown</option><option value="pebble">Pebble Grey</option><option value="saddle">Saddle</option></select></div>
+      <div class="rng"><label for="tr-rcol">Riser boards</label><select id="tr-rcol"><option value="charcoal" selected>Charcoal</option><option value="match">Match treads</option><option value="pebble">Pebble Grey</option></select></div>
+      <div class="rng"><label for="tr-lift">Lift boards</label><input type="range" id="tr-lift" min="0" max="14" step="0.5" value="0"><output id="tr-lift-out">0"</output></div>
+      <div class="two">
+        <label class="chk"><input type="checkbox" id="tr-glass" checked> Glass infill</label>
+        <label class="chk"><input type="checkbox" id="tr-rail" checked> Handrails</label>
+        <label class="chk"><input type="checkbox" id="tr-treads" checked> Tread boards</label>
+        <label class="chk"><input type="checkbox" id="tr-risers" checked> Riser boards</label>
+        <label class="chk"><input type="checkbox" id="tr-hl" checked> Dark frames</label>
+      </div>
+      <p class="note">The revised stair is about 1'-10⅜" longer than S2.0, so its foot lands further south on the walk. Stringers, pier and walk need revising by the engineer of record.</p>
+    </div>
+  </fieldset>
+  <div class="legend">
+    <div><span style="background: var(--new)"></span>New work (proposed)</div>
+    <div><span style="background: var(--demo)"></span>To be demolished</div>
+  </div>
+  <p id="help">Drag to orbit · right-drag or two fingers to pan · scroll to zoom · E / P to switch phase</p>
+</aside>
+
+<div id="compass" class="card" title="Drawing north points up the building; true north is 18° east of it">
+  <svg id="compass-needle" viewBox="-32 -32 64 64" aria-hidden="true">
+    <path d="M0 -22 L6 4 L0 0 L-6 4 Z" fill="currentColor"/>
+    <text x="0" y="-24" text-anchor="middle" font-size="8" font-family="IBM Plex Mono, monospace" fill="currentColor">N</text>
+    <g transform="rotate(18)"><line x1="0" y1="-4" x2="0" y2="-19" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      <text x="4" y="-17" font-size="6" font-family="IBM Plex Mono, monospace" fill="currentColor">TN</text></g>
+  </svg>
+</div>
+
+<div id="titleblock" class="card">
+  <div class="wide"><span class="k">Project</span>Hamilton Kent · Existing porch alteration<br>77 Carlingview Dr., Etobicoke, ON</div>
+  <div><span class="k">Engineer</span>Nassar Engineering</div><div><span class="k">Sheets</span><span class="v">A1.0–S2.0</span></div>
+  <div><span class="k">Issue</span><span class="v">Aug 02 2026 · for review</span></div><div><span class="k">Job</span><span class="v">110-26</span></div>
+  <div class="wide"><span class="k">LiDAR</span><span class="v">ON_TRCA2023 · E6130 N48360 · UTM 17N<br>Datum 0'-0" ≈ 159.0 m (survey heights)</span></div>
+  <div class="wide"><span class="k">Imagery</span><span class="v">SCOOP 2023 · Ontario Imagery Web Map Service<br>Open Government Licence – Ontario</span></div>
+</div>
+
+<div id="status" class="card">Loading…</div>
+<script type="module" src="./app.js"></script>
+
+</body>
+</html>
