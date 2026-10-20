@@ -1,6 +1,4 @@
-# Hamilton Kent porch renovation viewer
-
-77 Carlingview Dr., Etobicoke — porch alteration (job 110-26).
+# 77 Carlingview Dr. — porch alteration viewer
 
 A static Three.js site that shows the existing porch and the proposed steel stair
 (Nassar Engineering drawings A1.0–S2.0, Aug 02 2026, job 110-26) placed on the
@@ -29,7 +27,8 @@ Either:
 | `solids.js` | Builds the building solids: squared-up walls with panel facade, parapets, photo-textured roofs, rooftop units, the fabric storage tent |
 | `data/solids.json` | Building outlines, roof levels, rooftop units and the tent, derived from the LiDAR (`tools/solids.py`) |
 | `data/terrain_*.bin` | 0.25 m bare-ground model of the 77 Carlingview property, about 166 m × 110 m |
-| `data/veg.bin` | Tree points |
+| `trees3d.js` | Builds 3D trees (trunk, limbs, lumpy crown) and site light poles from `data/trees.json` |
+| `data/trees.json` | 25 trees and light poles detected in the LiDAR canopy: position, height, crown spread, crown base, photo colour (`tools/trees.py`) |
 | `data/ortho.jpg` | SCOOP 2023 aerial photo resampled to the property in the drawing-north frame (6.25 cm/px), colour-corrected and sharpened (`tools/ortho_tex.py`) |
 | `vendor/` | three.js r180 and OrbitControls |
 
@@ -59,6 +58,11 @@ Either:
   became rooftop units; the arched tent in the east yard became a vault. Parapet height
   (0.45 m) and the facade panel pattern are generic, not surveyed. The porch recess is cut
   out of the solid so the porch, glazing and overhang from model.js show through.
+- Trees: a 0.5 m canopy height model from the LiDAR vegetation points was split into
+  individual crowns (local-maximum treetops + watershed). Each tree keeps its measured
+  position, height, crown radius and crown base; the foliage tint comes from the photo over
+  that crown. Crown shape and branching are procedural. Tall, narrow returns along the road
+  and parking lot were read as light poles. Species are not identified.
 - Project datum 0'-0" is taken as 159.0 m survey height. With that datum the
   LiDAR reads the existing stair landing at +5'-7½" and the porch deck at about
   +8'-9", matching A1.1.
@@ -83,19 +87,3 @@ turns that crop into the files in `data/`, including the walk footprints flatten
 the terrain and the roof carved back over the porch. Both scripts expect the paths used
 when they were run; adjust them before re-running. The `tools/` folder is not needed
 for deployment.
-
-## Working on it together
-
-- Run it locally: `npx serve` in this folder, then open the address it prints. Any static
-  server works; opening `index.html` directly from disk will not, because the data files are
-  loaded with `fetch`.
-- No build step. Edit the files and refresh.
-- Branch from `main`, push, and open a pull request. Vercel posts a preview link on each pull
-  request; review the change there before merging. Pushes to `main` deploy the live site.
-- Where to make changes:
-  - porch, landing, framing and the S2.0 stair: `model.js` (feet, model frame described at the top)
-  - revised SD-01 stair, treads, guards, handrails: `treads.js` (inches)
-  - building solids look: `solids.js`; their shapes come from `data/solids.json`
-  - panel, controls and title block: `index.html`; viewer behaviour: `app.js`
-- Regenerating site data needs the LiDAR tile (not in the repo, ~137 MB) and the scripts in
-  `tools/`. Keep large source files (`.laz`, GeoTIFFs) out of git.
