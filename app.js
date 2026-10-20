@@ -71,8 +71,10 @@ scene.add(model.common, model.existing, model.proposed, model.belowGrade, model.
 
 // ---------- revised stair (Carlingview Stair Treads study, shop dwgs SD-01/02) ----------
 const tread = { mode: 'revised', W: 44, tgt: 12, col: 'brown', rcol: 'charcoal', lift: 0, glass: true, rail: true, hl: true, treads: true, risers: true };
-const LAND_S = 20.53;                              // south edge of the landing that stays (ft, model frame)
+const LAND_S = 20.53, LAND_N = 29.03;              // landing that stays, south edge and vestibule wall (ft, model frame)
 const FOOT_Y = LAND_S - TOPZ / 12;                 // bottom riser line of the revised stair, ~1'-10⅜" south of the drawn one
+// landing edges in the stair's inch frame (x = west of the walk centreline, z = along the run from the bottom riser)
+tread.land = { xW: (3.095 - 0) * 12 - 1.5, xE: -(6.2 - 3.095) * 12 + 1.2, zS: TOPZ, zN: TOPZ + (LAND_N - LAND_S) * 12 };
 const treadHolder = new THREE.Group();
 treadHolder.position.copy(modelPt(3.095, FOOT_Y, 1.875)); // centred on the 6'-2¼" walk, walk level
 treadHolder.rotation.y = Math.PI; treadHolder.scale.setScalar(0.0254); // study frame is inches, running up toward drawing north

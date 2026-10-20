@@ -49,7 +49,7 @@ export function layout(W, tgt) {
 export function buildTreadDesign(S) {
   const root = new THREE.Group();
   const G = {};
-  ['str', 'sup', 'treads', 'risers', 'guardL', 'guardR', 'glassL', 'glassR', 'railL', 'railR', 'plates'].forEach((k) => { G[k] = new THREE.Group(); root.add(G[k]); });
+  ['str', 'sup', 'treads', 'risers', 'guardL', 'guardR', 'glassL', 'glassR', 'railL', 'railR', 'plates', 'guardLand', 'glassLand'].forEach((k) => { G[k] = new THREE.Group(); root.add(G[k]); });
   const add = (mesh, grp) => { mesh.castShadow = mesh.receiveShadow = true; grp.add(mesh); return mesh; };
   const box = (x0, x1, y0, y1, z0, z1, mat, grp) => {
     [x0, x1] = [Math.min(x0, x1), Math.max(x0, x1)];
@@ -119,6 +119,35 @@ export function buildTreadDesign(S) {
       cyl.rotation.x = Math.PI / 2 - Math.atan2(yb2 - ya, zb2 - za); cyl.position.set(hx, (ya + yb2) / 2, (za + zb2) / 2); add(cyl, rl); }
     posts.forEach((z) => box(Math.min(hx, s * (h + 0.125)), Math.max(hx, s * (h + 0.125)), H36(z) - 1.6, H36(z) - 1.2, z - 0.3, z + 0.3, M.dark, rl));
   }
+
+  // landing guard: the same 42½" glass guard carried around the open edges of the landing that stays.
+  // S.land gives the landing in this frame (inches): west edge x, east wall x, south edge z, north wall z.
+  if (S.land) {
+    const L = S.land, top = DECK + 42.5, zS = L.zS + 1, MAXSP = 48;
+    const seg = (a, b) => {                          // a, b = [x, z]; axis-aligned
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]); if (len < 4) return;
+      const n = Math.max(1, Math.ceil(len / MAXSP)), along = a[0] !== b[0] ? 'x' : 'z';
+      const P = Array.from({ length: n + 1 }, (_, k) => [a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n]);
+      const run = (p, q, y0, y1, t, mat, grp) => along === 'x'
+        ? box(p[0], q[0], y0, y1, p[1] - t / 2, p[1] + t / 2, mat, grp) : box(p[0] - t / 2, p[0] + t / 2, y0, y1, p[1], q[1], mat, grp);
+      P.forEach(p => box(p[0] - 1, p[0] + 1, DECK, top - 2.5, p[1] - 1, p[1] + 1, M.dark, G.guardLand));
+      run(a, b, top - 2.5, top, 2, M.dark, G.guardLand);                           // HSS 2x2 top rail
+      run(a, b, DECK + 1.5, DECK + 3, 1.5, M.dark, G.guardLand);                   // HSS 1½ bottom rail
+      for (let k = 0; k < n; k++) {
+        const p = P[k], q = P[k + 1], d = along === 'x' ? Math.sign(q[0] - p[0]) : Math.sign(q[1] - p[1]);
+        const p2 = along === 'x' ? [p[0] + 1.6 * d, p[1]] : [p[0], p[1] + 1.6 * d], q2 = along === 'x' ? [q[0] - 1.6 * d, q[1]] : [q[0], q[1] - 1.6 * d];
+        const gl = run(p2, q2, DECK + 4.5, top - 3.1, 0.5, M.glass, G.glassLand); gl.castShadow = false;
+        for (const c of [p2, q2]) for (const y of [DECK + 5.5, top - 5]) {
+          const cl = along === 'x' ? [c[0] - 0.5 * d, c[1]] : [c[0], c[1] - 0.5 * d];
+          box(cl[0] - (along === 'x' ? 0.5 : 0.5), cl[0] + 0.5, y, y + 2, cl[1] - 0.5, cl[1] + 0.5, M.dark, G.glassLand);
+        }
+      }
+    };
+    const xc = h + 1.125;
+    seg([xc, zS], [L.xW, zS]);                       // south edge, west of the stair
+    seg([L.xW, zS], [L.xW, L.zN - 1]);                // west edge, to the vestibule wall
+  }
+  G.glassLand.visible = S.glass;
 
   G.treads.visible = S.treads; G.risers.visible = S.risers;
   G.treads.position.y = G.risers.position.y = S.lift;
