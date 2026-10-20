@@ -146,7 +146,6 @@ export function buildTreadDesign(S) {
     const xc = h + 1.125;
     seg([xc, zS], [L.xW, zS]);                       // south edge, west of the stair
     seg([L.xW, zS], [L.xW, L.zN - 1]);                // west edge, to the vestibule wall
-    seg([-xc, zS], [L.xE, zS]);                      // south edge, east of the stair, to the building face
   }
   G.glassLand.visible = S.glass;
 

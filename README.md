@@ -50,8 +50,8 @@ Either:
   TF-1 frame per tread with 3/16" riser plate, two Trex Select 2×6 boards per tread,
   9/16" Trex fascia risers, 42½" glass guard, 36" handrails both sides with 12" extensions.
   The same glass guard (HSS 2×2 posts ≤ 48" o.c., top and bottom rails, clamped tempered glass)
-  continues around the open west and south edges of the landing to the vestibule wall and the
-  building face, so the landing has no unguarded edge. The top riser is held at the landing edge, so the foot lands about 1'-10⅜" further south
+  continues along the landing's open west edge to the vestibule wall and along the south edge
+  west of the stair. There is no guard on the short south edge between the stair and the building. The top riser is held at the landing edge, so the foot lands about 1'-10⅜" further south
   than the S2.0 stair; the new walk is carried to it. Clear width defaults to 44"
   (not dimensioned on the drawings). "As drawn (S2.0)" switches back to Nassar's stair.
 - Building solids: LiDAR building points were split into roof levels (+6.45, +7.65, +10.85,
